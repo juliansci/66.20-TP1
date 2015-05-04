@@ -11,3 +11,4 @@ void concatBuffer(char** line, const char* buffer) {
         *line = concat;
     }
 }
+

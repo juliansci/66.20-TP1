@@ -5,6 +5,7 @@
 extern int isEndOfLine(char c);
 extern void concatBuffer(char** line, const char* buffer);
 
+
 int tacFile(FILE* fp) {
     const int bufIncrSize = 10;
     char ** arrayLines = NULL;

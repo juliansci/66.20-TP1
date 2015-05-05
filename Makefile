@@ -3,7 +3,7 @@ CFLAGS = -g -Wall
 
 all: $(PROG)
 
-tp1: main.c holaMundo.S printHelp.c printVersion.c isEndOfLine.c concatBuffer.c tacFile.c
+tp1: main.c holaMundo.S printHelp.c printVersion.c isEndOfLine.S concatBuffer.c tacFile.c
 	$(CC) $(CFLAGS) -o $@ $>
 
 clean:

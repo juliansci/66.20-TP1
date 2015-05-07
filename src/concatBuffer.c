@@ -2,7 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-void concatBuffer(char** line, const char* buffer) {
+extern int strLength(char* c);
+
+void concatBuffer(char** line, char* buffer) {
     size_t len1 = *line ? strlen(*line) : 0;
     size_t len2 = buffer ? strlen(buffer) : 0;
     char* concat = realloc(*line, len1 + len2 + 1);

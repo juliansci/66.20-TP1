@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-extern int strLength(char* c);
+extern size_t strLength(char* c);
 
 void concatBuffer(char** line, char* buffer) {
     size_t len1 = *line ? strlen(*line) : 0;

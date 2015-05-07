@@ -3,7 +3,7 @@ CFLAGS = -g -Wall
 DSRC = src/
 all: $(PROG)
 
-tp1: $(DSRC)main.c $(DSRC)holaMundo.S $(DSRC)printHelp.S $(DSRC)printVersion.S $(DSRC)isEndOfLine.S $(DSRC)strLength.c $(DSRC)concatBuffer.c $(DSRC)tacFile.c
+tp1: $(DSRC)main.c $(DSRC)holaMundo.S $(DSRC)printHelp.S $(DSRC)printVersion.S $(DSRC)isEndOfLine.S $(DSRC)strLength.S $(DSRC)concatBuffer.c $(DSRC)tacFile.c
 	$(CC) $(CFLAGS) -o $@ $>
 
 clean:

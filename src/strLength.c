@@ -1,5 +1,7 @@
 #include <string.h>
 
-int strLength(char* c){
-    return strlen(c);
+size_t strLength(char* s){
+    size_t i;
+    for(i = 0; s[i] != 0; i++);
+    return i;
 }

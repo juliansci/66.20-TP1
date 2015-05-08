@@ -32,7 +32,7 @@ printHelp:
 	lw	ra,28(sp)
 	lw	gp,20(sp)
 	addu	sp,sp,32
-	j	ra
+	jr	ra
 	.end	printHelp
 
 	.rdata

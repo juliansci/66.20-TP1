@@ -7,11 +7,6 @@ extern void concatBuffer(char** line, const char* buffer);
 
 
 int tacFile(FILE* fp) {
-
-	printf("%s %d","dummy",14);
-	printf("%s %d","salto de linea",isEndOfLine('\n'));
-	printf("%s %d","no salto de linea",isEndOfLine('a'));
-
     const int bufIncrSize = 10;
     char ** arrayLines = NULL;
     int lineCounter = 0;
@@ -21,7 +16,7 @@ int tacFile(FILE* fp) {
         concatBuffer(&line, buffer);
         char lastCharacterBuffer = buffer[strlen(buffer) - 1];
         if (isEndOfLine(lastCharacterBuffer)) {
-        	printf("%c %s",lastCharacterBuffer," es un salto de linea");
+        	//printf("%c %s",lastCharacterBuffer," es un salto de linea");
             arrayLines = realloc(arrayLines,
                     (lineCounter + 1) * sizeof (char *));
             arrayLines[lineCounter] = line;

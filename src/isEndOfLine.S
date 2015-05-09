@@ -19,7 +19,7 @@ isEndOfLine:
 	li	v0, 0
 	# el codigo ascii de new line es 10
 	li	t0, 10
-	beq v0, t0, endOfLineTrue
+	beq a0, t0, endOfLineTrue
 	li	v0, 0
 	j	isEndOfLine_return
 endOfLineTrue:

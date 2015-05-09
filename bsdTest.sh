@@ -2,7 +2,7 @@
 
 testFile() {
 	echo -e "\nTEST "$1".txt"
-	./tp0 test-files/$1.txt | ./tp0 > output/$1.txt
+	./tp1 test-files/$1.txt | ./tp1 > output/$1.txt
 	res1=`md5 test-files/$1.txt`
 	res2=`md5 output/$1.txt`
 	
@@ -18,7 +18,7 @@ testFile() {
 testWords() {
 	echo -e "\nTEST WORDS"
 	res1=`cat '/usr/share/dict/words' | md5`
-	res2=`./tp0 '/usr/share/dict/words' | ./tp0 | md5`
+	res2=`./tp1 '/usr/share/dict/words' | ./tp1 | md5`
 	
 	echo "md5 de words: $res2"
 	if [ $res1 == $res2 ]; 
@@ -30,7 +30,7 @@ testWords() {
 }
 
 echo Compilando...
-gcc -o tp0 main.c
+gcc -o tp1 main.c
 
 testFile empty
 testFile basic

@@ -1,6 +1,8 @@
 #include <mips/regdef.h>
 #include <sys/syscall.h>
 
+# en LTA guardo: line, lineLength, buffer, bufferLength, ¿concatAddress?
+
 	.text
 	.align		2
 
@@ -51,6 +53,23 @@ bufferLength:
 	j			return
 
 concat:
+	lw			a0, 16($fp)		# string 1
+	lw 			a1, 20($fp)		# len1
+	lw 			a2, 24($fp)		# string 2
+	lw 			a3, 28($fp)		# len2
+	la			t9, mergeStrings
+	jal			ra, t9
+	j			return			# ya tengo guardado en v0 el string a retornar
+
+
+#	addu		t4, t1, t3		# t4 = largo total
+#	addiu		t4, t4, 1		# le agrega una posicion mas
+#	li 			v0, 9          	# codigo de system call para allocar heap memory
+#	move 		a0, t4			# cantidad de bytes a allocar
+#	syscall
+#	sw			v0, 32($fp)		# address de concat guardado en 32($fp)
+#	move		t5, zero		# t5 = charIndex de line
+
 
 
 return:

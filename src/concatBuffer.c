@@ -3,6 +3,7 @@
 #include <string.h>
 
 extern size_t strLength(char* c);
+extern char* mergeStrings(char* string1, size_t len1, char* string2, size_t len2);
 
 char* concatBuffer(char* line, char* buffer) {
 	size_t len1 = 0;
@@ -19,8 +20,7 @@ char* concatBuffer(char* line, char* buffer) {
 		return line;
 	}
 
-	char* concat = realloc(line, len1 + len2 + 1); //reserva mas espacio para line, ¿por que mas 1?
-    memcpy(concat + len1, buffer, len2 + 1); //copia los elementos de buffer a partir del ultimo de line
+	char* concat = mergeStrings(line,len1,buffer,len2);
     return concat;
 }
 

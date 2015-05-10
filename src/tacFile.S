@@ -29,10 +29,7 @@ tacFile:
 	sw 	$zero,20($fp)		#arrayLines en LTA (fp + 20)
 	sw 	$zero,24($fp)		#lineCounter en LTA (fp + 24)
 
-	lw	$t0,16($fp)		#recupero t0(bufIncrSize) de LTA (fp + 16)
-	subu	$sp,$sp,$t0		#corro sp t0(10) posiciones para almacenar el array
-	addu	$t0,$t0,-1		#resto 1 a t0
-	addu	$t0,$sp,t0		#en t0 guardo pos de comienzo del array
+	la	$t0,buffer		#en t0 guardo pos de comienzo del array (buffer)
 	sw	$t0,28($fp)		#almaceno pos de comiezo del array (buffer) en (fp + 28)
 
 	lw	$a0,16($fp)		#guardo en a0 t0(bufIncrSize) que esta en (fp + 16)
@@ -59,7 +56,14 @@ $bloque_while:
 	jal	$ra,$t9
 
 	lw	$a0,28($fp)		#direccion de comienzo de buffer que esta en (fp + 28)
-	la	$t9,strlen		#llamo a strlen. No se si esta bien pasarle la direccion de buffer. Revisar
+	la	$t9,strlen		#llamo a strlen. No se si esta bien pasarle la direccion de buffer. Revisar 
 	jal	$ra,$t9
 
+
+	.rdata
+	align 2
+buffer: .word 0,0,0,0,0,0,0,0,0,0
+
+
+	
 	

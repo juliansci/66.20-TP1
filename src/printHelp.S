@@ -6,14 +6,14 @@
 	.globl	printHelp
 	.ent	printHelp
 printHelp:
-	.frame	$fp,32,ra	#3SRA + 1LTA + 4ABA
+	.frame	$fp,40,ra	#4SRA + 2LTA + 4ABA
 	.set	noreorder
 	.cpload	t9
 	.set	reorder
-	subu 	sp,sp,32
-	.cprestore 20
-	sw	$fp,24(sp) 
-	sw	ra,28(sp)
+	subu 	sp,sp,40
+	.cprestore 24
+	sw	$fp,28(sp) 
+	sw	ra,32(sp)
 	move 	$fp, sp
 	la 	a0, msg
 	la	t9, strLength
@@ -28,10 +28,10 @@ printHelp:
 	move	a2, t0     
 	syscall
 	
-	lw	$fp,24(sp)
-	lw	ra,28(sp)
-	lw	gp,20(sp)
-	addu	sp,sp,32
+	lw	$fp,28(sp)
+	lw	ra,32(sp)
+	lw	gp,24(sp)
+	addu	sp,sp,40
 	jr	ra
 	.end	printHelp
 

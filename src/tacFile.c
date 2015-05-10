@@ -3,7 +3,7 @@
 #include <string.h>
 
 extern int isEndOfLine(char c);
-extern void concatBuffer(char** line, const char* buffer);
+extern char* concatBuffer(char* line, const char* buffer);
 
 
 int tacFile(FILE* fp) {
@@ -13,7 +13,7 @@ int tacFile(FILE* fp) {
     char buffer[bufIncrSize]; //buffer es un array de chars de tamaño 10
     char* line = (char *) calloc(bufIncrSize, sizeof (char)); //line es un puntero a 10 chars
     while (fgets(buffer, bufIncrSize, fp)) { //lee del archivo de a 10 caracteres o hasta que encuentre fin de linea
-        concatBuffer(&line, buffer); //le concatena a line el contenido del buffer
+        line = concatBuffer(line, buffer); //le concatena a line el contenido del buffer
         char lastCharacterBuffer = buffer[strlen(buffer) - 1];
         if (isEndOfLine(lastCharacterBuffer)) {
             arrayLines = realloc(arrayLines,

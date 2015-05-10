@@ -7,14 +7,18 @@
 	.globl	isEndOfLine
 	.ent	isEndOfLine
 isEndOfLine:
-	.frame	$fp, 16, ra
+#creo frame
+	.frame	$fp, 8, ra   # 2(SRA) + 0(FPA) + 0(LTA) + 0(ABA) (leaf function)
 	.set	noreorder
 	.cpload	t9
 	.set	reorder
-	subu	sp, sp, 16
+	subu	sp, sp, 8
+# guardo registros
 	.cprestore 0
 	sw	$fp, 4(sp)
 	move	$fp, sp
+	sw a0, 8($fp) 		#guardo el primer argumento en el ABA de mi caller
+
 	# Use v0 for the result.
 	li	v0, 0
 	# el codigo ascii de new line es 10
@@ -28,9 +32,10 @@ endOfLineTrue:
 
 isEndOfLine_return:
 	# Destruimos el frame.
-	#
+	# Restauro callee-saved regs
 	lw	$fp, 4(sp)
-	addu	sp, sp, 16
+	lw	gp, 0(sp)
+	addu	sp, sp, 8
 
 	# Retorno.
 	#

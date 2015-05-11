@@ -4,7 +4,7 @@
 
 extern int isEndOfLine(char c);
 extern char* concatBuffer(char* line, const char* buffer);
-
+extern int printLines(int lineCounter,char ** arrayLines, char* line);
 
 int tacFile(FILE* fp) {
     const int bufIncrSize = 10;
@@ -24,14 +24,6 @@ int tacFile(FILE* fp) {
         }
     }
 
-    //esto podriamos sacarlo a otro archivo .S
-    int i;
-    for (i = lineCounter - 1; i >= 0; i--) {
-        printf("%s", arrayLines[i]);
-        free(arrayLines[i]);
-
-    }
-    free(line);
-    free(arrayLines);
+    printLines(lineCounter,arrayLines,line);
     return (EXIT_SUCCESS);
 }

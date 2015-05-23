@@ -43,49 +43,51 @@ allocMemory:
 	addu		t4, t1, t3		# t4 = len1 + len2. pos 32
 	sw			t4, 32($fp)
 	addiu		t4, t4, 1		# t4 <- t4 +1
-	li 			v0, 9          	# codigo de system call para allocar heap memory
 	move 		a0, t4			# cantidad de bytes a allocar
-	syscall						# v0 contains address of allocated memory
+	la			t9, mymalloc
+	jal			ra, t9
 	sw			v0, 36($fp)		# dir(concat) = address allocated memory. pos 36
 
 copyString1:
-	move		t6, zero		# t6 = charIndex de string1
-	lw			t0, 16($fp)		# t0 = string1
+	move		t6, zero		# t6 = i
+	lw			t0, 16($fp)		# t0 = &string1
 	lw			t1, 20($fp)		# t1 = len1
-	lw			t5, 36($fp)		# t5 = address a escribir
+	lw			t5, 36($fp)		# t5 = &concat
 _forString1:
-	addu		t7, t0, t6		# t7 = address a leer <- string1[charIndex]
-	lb 			t8, 0(t7) 		# t8 = char leido de t7
-	sb			t8, 0(t5)		# escribo el char en t5 (en heap)
-	addiu		t6, t6, 1		# charIndex <- charIndex + 1
-	addiu		t5, t5, 1		# address <- address + 1
-	subu		t4, t1, t6		# t4 <- len1 - charIndex
-	blez 		t4, copyString2		# si (t4 <= 0) voy a copyString2
+	bge 		t6, t1, copyString2		# si (i >= len1) voy a copyString2
+
+	addu		t7, t0, t6		# t7 = &string1[i]
+	lb 			t8, 0(t7) 		# t8 = string1[i]
+
+	addu		t7, t5, t6		# t7 = &concat[i]
+	sb			t8, 0(t7)		# concat[i] <- string1[i]
+
+	addiu		t6, t6, 1		# i++
 	j			_forString1
 
 copyString2:
-	move		t6, zero		# t6 = charIndex de string2
-	lw			t2, 24($fp)		# t2 = string2
+	move		t6, zero		# t6 = i
+	lw			t2, 24($fp)		# t2 = &string2
 	lw			t3, 28($fp)		# t3 = len2
-	lw			t5, 36($fp)		# t5 = dir(concat)
+	lw			t5, 36($fp)		# t5 = &concat
 	lw			t1, 20($fp)		# t1 = len1
-	addu		t5, t5, t1		# t5 = address a escribir <- dir(concat) + len1
 _forString2:
-	addu		t7, t2, t6		# t7 = address a leer <- string2[charIndex]
-	lb			t8, 0(t7)		# t8 = char leido de t7
-	sb			t8, 0(t5)		# escribo el char en t5 (en heap)
-	addiu		t6, t6, 1		# charIndex <- charIndex + 1
-	addiu		t5, t5, 1		# address <- address + 1
-	subu		t4, t3, t6		# t4 <- len2 - charIndex
-	blez 		t4, endMerge		# si (t4 <= 0) voy a endMerge
+	bge 		t6, t3, endMerge		# si (i >= len2) voy a endMerge
+	addu		t7, t2, t6		# t7 = &string2[i]
+	lb			t8, 0(t7)		# t8 = string2[i]
+
+	addu 		t7, t6, t1		# t7 = j <- i + len1
+	addu		t7, t5, t7		# t7 = &concat[j]
+	sb 			t8, 0(t7)		# concat[j] = string2[i]
+
+	addiu		t6, t6, 1		#i++
 	j			_forString2
 
 endMerge:
 	lw			t5, 36($fp)		# t5 = dir(concat)
 	lw			t4, 32($fp)		# t4 = len1 + len2
-	addu		t5, t5, t4		# address a escribir <- dir(concat) + len1 + len2
-	addu		t8, zero, zero	# t8 <- zero (fin de string)
-	sb			t8, 0(t5)		# escribo el char en t5 (en heap)
+	addu		t7, t5, t4		# t7 = &concat[len1+len2]
+	sb			zero, 0(t7)		# concat[len1+len2] = 0
 	lw			v0, 36($fp)		# devuelvo dir(concat)
 
 return:
@@ -100,5 +102,4 @@ return:
 # Retorno.
 	jr			ra
 	.end		mergeStrings
-
 

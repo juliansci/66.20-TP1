@@ -4,7 +4,7 @@
 
 extern int isEndOfLine(char c);
 extern char* concatBuffer(char* line, const char* buffer);
-extern int printLines(int lineCounter,char ** arrayLines, char* line);
+extern int printLines(int lineCounter, char ** arrayLines);
 
 int tacFile(FILE* fp) {
     const int bufIncrSize = 10;
@@ -24,6 +24,9 @@ int tacFile(FILE* fp) {
         }
     }
 
-    printLines(lineCounter,arrayLines,line);
+    printLines(lineCounter, arrayLines);
+    free(line);
+    free(arrayLines);
+    
     return (EXIT_SUCCESS);
 }

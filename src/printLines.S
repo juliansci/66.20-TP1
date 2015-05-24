@@ -44,6 +44,12 @@ _loop:
 	move	a2, t3    
 	syscall
 
+        # Libero memoria de char*
+        lw      t1, 20($fp)
+        lw 	a0, 0(t1)		
+	la      t9, myfree
+	jal	ra, t9
+
         # Actualizo estado variables
         lw      t0, 16($fp)
         lw      t1, 20($fp)
@@ -51,6 +57,7 @@ _loop:
         subu    t1, t1, 4
         sw      t0, 16($fp)
         sw      t1, 20($fp)
+
         j   _loop
 
 _end_loop:

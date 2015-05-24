@@ -10,10 +10,10 @@ extern void myfree(void *);
 
 int tacFile(FILE* fp) {
     const int bufIncrSize = 10;
-    char ** arrayLines = NULL;
     int lineCounter = 0;
+    char ** arrayLines = (char**) mymalloc((lineCounter + 1) * sizeof (char *));
     char buffer[bufIncrSize]; //buffer es un array de chars de tamaño 10
-    char* line = (char*)mymalloc(1);
+    char* line = (char*) mymalloc(1 * sizeof (char *));
     *line = 0;
 
     while (fgets(buffer, bufIncrSize, fp)) { //lee del archivo de a 10 caracteres o hasta que encuentre fin de linea
@@ -22,18 +22,20 @@ int tacFile(FILE* fp) {
         line = newLine;
         char lastCharacterBuffer = buffer[strlen(buffer) - 1];
         if (isEndOfLine(lastCharacterBuffer)) {
-            arrayLines = realloc(arrayLines,
-                    (lineCounter + 1) * sizeof (char *)); //reserva espacio para una linea mas en arrayLines
+            char** oldArrayLines = arrayLines;
+            arrayLines = (char**) mymalloc((lineCounter + 1) * sizeof (char *));
+            arrayLines = oldArrayLines;
+            //  myfree(oldArrayLines);
             arrayLines[lineCounter] = line; //guarda line en el array
             lineCounter++;
-            line = (char*)mymalloc(1);
+            line = (char*) mymalloc(1 * sizeof (char *));
             *line = 0;
         }
     }
 
     printLines(lineCounter, arrayLines);
     myfree(line);
-    free(arrayLines);
-    
+  //  myfree(arrayLines);
+
     return (EXIT_SUCCESS);
 }

@@ -7,11 +7,10 @@ extern void myfree(void *);
 
 char** resizeArrayLines(char** arrayLines, int arraySize) {
     int i;
-    char** oldArrayLines = arrayLines;
-    arrayLines = (char**) mymalloc((arraySize + 1) * sizeof (char*));
+    char** newArrayLines = (char**) mymalloc((arraySize + 1) * sizeof (char*));
     for (i = 0; i < arraySize; i++) {
-        arrayLines[i] = oldArrayLines[i];
+        newArrayLines[i] = arrayLines[i];
     }
-    myfree(oldArrayLines);
-    return arrayLines;
+    myfree(arrayLines);
+    return newArrayLines;
 }

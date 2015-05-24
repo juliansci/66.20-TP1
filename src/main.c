@@ -2,14 +2,11 @@
 #include <stdlib.h>
 #include <string.h>
 
-extern void holaMundo();
 extern void printHelp();
 extern void printVersion();
 extern int tacFile(FILE* fp);
 
 int main(int argc, char** argv) {
-    
-//    holaMundo();
     
     if ((argc == 2) && ((strcmp(argv[1], "-h") == 0) || (strcmp(argv[1], "--help") == 0))) {
         printHelp();

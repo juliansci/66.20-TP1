@@ -8,6 +8,7 @@ extern int printLines(int lineCounter, char ** arrayLines);
 extern void *mymalloc(size_t);
 extern void myfree(void *);
 extern char** resizeArrayLines(char** arrayLines, int arraySize);
+extern char** storeNewLine(char lastCharacterBuffer, int* lineCounter, char ** arrayLines, char** line);
 
 
 int tacFile(FILE* fp) {
@@ -22,13 +23,7 @@ int tacFile(FILE* fp) {
         myfree(line);
         line = newLine;
         char lastCharacterBuffer = buffer[strlen(buffer) - 1];
-        if (isEndOfLine(lastCharacterBuffer)) {
-            arrayLines = resizeArrayLines(arrayLines, lineCounter);
-            arrayLines[lineCounter] = line;
-            lineCounter++;
-            line = (char*) mymalloc(1);
-            *line = 0;
-        }
+	arrayLines = storeNewLine(lastCharacterBuffer,&lineCounter,arrayLines,&line); 
     }
 
     printLines(lineCounter, arrayLines);

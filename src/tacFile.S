@@ -41,6 +41,7 @@ cond_while:
 	la	a1, buffer		# Load Buffer Address
 	li	a2, 10			# Buffer Size
 	syscall
+
 	bne	v0,zero,bloque_while	#v0!=0 => entra a bloque_while
 	b	end
 
@@ -62,14 +63,9 @@ bloque_while:
 	sw	v0,24($fp)		#guardo nuevo puntero a line en (fp + 24)
 
 	#char lastCharacterBuffer = buffer[strlen(buffer) - 1];
-	li	v0, 8			#read string		
-	lw	a0,buffer		#direccion de comienzo de buffer
-	li	a1,10	
-	syscall
-	move 	a0,v0
-	#la	t9,strlen		#llamo a strlen.
-	#jal	ra,t9
-	
+	la 	a0,buffer
+	la	t9,strlen		#llamo a strlen.
+	jal	ra,t9
 
 end: 
 	#lw	a0,16($fp)		#carga en a0 lineCounter que esta en (fp + 24)

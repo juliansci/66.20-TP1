@@ -23,73 +23,71 @@ tacFile:
 	
 	sw	a0,64($fp)		#guardo a0 afuera del frame. a0 es file pointer
 
-	li	t0,10			#guardo 10 en t0. 10 es bufIncrSize
-	sw	t0,16($fp)		#guardo t0(bufIncrSize) en LTA (fp + 16)
+	li	t0,0			#guardo 0 en t0
+	sw 	t0,16($fp)		#guardo lineCounter en (fp + 16)
+	li 	a0,1
+	la	t9,mymalloc		#llamo a malloc
+	jal	ra,t9		
+	sw	v0,20($fp)		#obtengo puntero a arrayLines y lo guardo en (fp + 20)
 
-	sw 	zero,20($fp)		#arrayLines en LTA (fp + 20)
-	sw 	zero,24($fp)		#lineCounter en LTA (fp + 24)
+	li	a0,1			#guardo 1 en a0
+	la	t9,mymalloc		#llamo a mymalloc
+	jal	ra,t9		
+	sw	v0,24($fp)		#obtengo puntero a lines y lo guardo en (fp + 24)	
 
-	la	t0,buffer		#en t0 guardo pos de comienzo del array (buffer)
-	sw	t0,28($fp)		#almaceno pos de comiezo del array (buffer) en (fp + 28)
+cond_while: 
+	li	v0, 14			# Read File Syscall
+	lw	a0, 64($fp) 		# Load File Descriptor
+	la	a1, buffer		# Load Buffer Address
+	li	a2, 10			# Buffer Size
+	syscall
+	bne	v0,zero,bloque_while	#v0!=0 => entra a bloque_while
+	b	end
 
-	lw	a0,16($fp)		#guardo en a0 t0(bufIncrSize) que esta en (fp + 16)
-	li	a1,1			#guardo en a1 el valor 1 (seria size of char, despues cambiar segun calloc)
-
-	la	t9,calloc		#llamo a calloc
-	jal	ra,t9			
-
-	sw	v0,32($fp)		#obtengo puntero a line y lo guardo en (fp + 32)
-
-$cond_while: 
-	lw	a0,28($fp)		#direccion de comienzo de buffer que esta en (fp + 28)
-	lw	a1,16($fp) 		#bufIncSize que esta en (fp + 16)
-	lw	a2,64($fp) 		#file pointer que esta en (fp + 64)
-	la	t9,fgets		#llamo a fgets
-	jal	ra,t9
-	bne	v0,zero,$bloque_while	#en v0 esta lo que devuelve fgets. v0!=0 => entra a bloque_while
-	b	$end
-
-$bloque_while: 
-	lw	a0,32($fp)		#puntero a line que esta en (fp + 32)
-	lw	a1,28($fp)		#direccion de comienzo de buffer que esta en (fp + 28)
+bloque_while: 
+ 	# char *newLine = concatBuffer(line, buffer);
+	lw	a0,24($fp)		#puntero a line que esta en (fp + 24)
+	la	a1,buffer		#direccion de comienzo de buffer
 	la	t9,concatBuffer		#llamo a concatBuffer. 
 	jal	ra,t9
-
-	lw	a0,28($fp)		#direccion de comienzo de buffer que esta en (fp + 28)
-	la	t9,strlen		#llamo a strlen. No se si esta bien pasarle la direccion de buffer. Revisar 
-	jal	ra,t9
-
-	move	t0,v0			#guardo en t0 el valor de v0 (que es lo que me devuelve strlen)
-	addu	t0,t0,-1		#le resto 1
-	lw 	t1,28($fp)		#direccion de comienzo de buffer que esta en (fp + 28)
-	addu	t0,t0,t1		#direccion de buffer + tamaño de buffer- 1 = dir ultimo elemento
-	lbu	t0,0(t0)		#cargo contenido del ultimo elemento
-	move	a0,t0			#muevo a a0 el contenido del ultimo elemento		
-	la	t9,isEndOfLine		#llamo a isEndOfLine
-	jal	ra,t9
-
-	beq	v0,zero,$cond_while	#v0=0 => no es fin de linea => vuelvo a la cond del while
-
-	lw	t0,24($fp)		#cargo LineCounter que esta en (fp + 24)
-	addu	t0,t0,1			#le sumo 1, esta bien sumarle 1 a un int asi?
-	lw	a0,20($fp)		#cargo en a0 arrayLines que esta en (fp + 20)
-	move	a1,t0			#cargo en a1 el contenido de t0 
-	la	t9,realloc
-	jal	ra,t9
-
-					#...
+	sw	v0,28($fp)		#obtengo puntero a newLine y lo guardo en (fp + 28)
 	
-	b	$cond_while		#vuelvo a la condicion del while
-$end: 
-	lw	a0,24($fp)		#carga en a0 lineCounter que esta en (fp + 24)
-	lw	a1,20($fp)		#carga en a1 arrayLines que esta en (fp + 20)
-	lw	a2,32($fp)		#carga en a2 line que esta en (fp + 32)
-	la	t9,printLines		#llamo a printLines
-	jal	ra,t9
+	# myfree(line);
+	lw	a0,24($fp)		#cargo puntero a line que esta en (fp + 24)
+	la	t9,myfree		#llamo a myfree
+	jal	ra,t9	
+
+	# \line = newLine
+	lw	t0,28($fp)		#obtengo puntero a newLine que esta en (fp + 28)
+	sw	v0,24($fp)		#guardo nuevo puntero a line en (fp + 24)
+
+	#char lastCharacterBuffer = buffer[strlen(buffer) - 1];
+	li	v0, 8			#read string		
+	lw	a0,buffer		#direccion de comienzo de buffer
+	li	a1,10	
+	syscall
+	move 	a0,v0
+	#la	t9,strlen		#llamo a strlen.
+	#jal	ra,t9
+	
+
+end: 
+	#lw	a0,16($fp)		#carga en a0 lineCounter que esta en (fp + 24)
+	#lw	a1,20($fp)		#carga en a1 arrayLines que esta en (fp + 16)
+	#la	t9,printLines		#llamo a printLines
+	#jal	ra,t9
+
+	lw	gp,48(sp)		#restauro gp (sp + 48)
+	lw	ra,56(sp)		#restauro ra (sp + 56)
+	lw	$fp,52(sp)		#restauro fp (sp + 52)
+	addu	sp,sp,64		#destruyo stack frame
+        jr 	ra
 
 	.end	tacFile
 
 	.rdata
 	.align 2
-buffer: .word 0,0,0,0,0,0,0,0,0,0
+buffer: .space 10
+#buffer: .byte ' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '
+#buffer: .asciiz ""
 	

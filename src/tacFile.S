@@ -102,6 +102,10 @@ end:
 	la	t9,myfree		#llamo a myfree
 	jal	ra,t9
 
+	#lw	a0,36($fp)		#carga en a0 buffer que esta en (fp + 36)
+	#la	t9,myfree		#llamo a myfree
+	#jal	ra,t9
+
 	li 	v0,1
 
 	lw	gp,48(sp)		#restauro gp (sp + 48)

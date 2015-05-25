@@ -6,7 +6,7 @@ all: $(PROG)
 deleteOld:
 	rm $(PROG)
 
-tp1: $(DSRC)main.c $(DSRC)printHelp.S $(DSRC)printVersion.S $(DSRC)isEndOfLine.S $(DSRC)strLength.S $(DSRC)concatBuffer.S $(DSRC)tacFile.c $(DSRC)printLines.S $(DSRC)resizeArrayLines.S  $(DSRC)mergeStrings.S $(DSRC)mymalloc.S $(DSRC)storeNewLine.S $(DSRC)readFile.S
+tp1: $(DSRC)main.c $(DSRC)printHelp.S $(DSRC)printVersion.S $(DSRC)isEndOfLine.S $(DSRC)strLength.S $(DSRC)concatBuffer.S $(DSRC)tacFile.S $(DSRC)printLines.S $(DSRC)resizeArrayLines.S  $(DSRC)mergeStrings.S $(DSRC)mymalloc.S $(DSRC)storeNewLine.S $(DSRC)readFile.S
 	$(CC) $(CFLAGS) -o $@ $>
 
 clean:

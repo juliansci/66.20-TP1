@@ -30,85 +30,78 @@ tacFile:
 	jal	ra,t9		
 	sw	v0,20($fp)		#obtengo puntero a arrayLines y lo guardo en (fp + 20)
 
+	li 	a0,10
+	la	t9,mymalloc		#llamo a malloc
+	jal	ra,t9		
+	sw	v0,36($fp)		#obtengo puntero a buffer y lo guardo en (fp + 36)
+
+
 	li	a0,1			#guardo 1 en a0
 	la	t9,mymalloc		#llamo a mymalloc
 	jal	ra,t9		
 	sw	v0,24($fp)		#obtengo puntero a lines y lo guardo en (fp + 24)	
 
 cond_while: 
-	la	a0,buffer
+
+	lw	a0,36($fp)
 	li	a1,10
 	lw	a2,64($fp)
-	la	t9,fgets
+	la	t9,readFile
 	jal	ra,t9
-
-	#li	v0, 14			# Read File Syscall
-	#lw	a0, 64($fp) 		# Load File Descriptor
-	#la	a1, buffer		# Load Buffer Address
-	#li	a2, 10			# Buffer Size
-	#syscall
+	sw	v0,36($fp)
 
 	bne	v0,zero,bloque_while	#v0!=0 => entra a bloque_while
 	b	end
 
 bloque_while: 
 
-# char *newLine = concatBuffer(line, buffer);
 	lw	a0,24($fp)		#puntero a line que esta en (fp + 24)
-	la	a1,buffer		#direccion de comienzo de buffer
+	lw	a1,36($fp)		#direccion de comienzo de buffer
 	la	t9,concatBuffer		#llamo a concatBuffer. 
 	jal	ra,t9
 	sw	v0,28($fp)		#obtengo puntero a newLine y lo guardo en (fp + 28)
-	
-# myfree(line);
+
 	lw	a0,24($fp)		#cargo puntero a line que esta en (fp + 24)
 	la	t9,myfree		#llamo a myfree
 	jal	ra,t9	
 
-# \line = newLine
 	lw	t0,28($fp)		#obtengo puntero a newLine que esta en (fp + 28)
 	sw	t0,24($fp)		#guardo nuevo puntero a line en (fp + 24)
 
-#char lastCharacterBuffer = buffer[strlen(buffer) - 1];
-	la 	a0,buffer
-	la	t9,strlen		#llamo a strlen.
+ 	lw      a0, 36($fp)		#puntero a buffer esta en (fp + 36)
+	la	t9,strLength		#llamo a strlen.
 	jal	ra,t9
-	move 	t0,v0			
+	move 	t0,v0	
 	subu	t0,t0,1
-	la	t1,buffer
-	addu	t2,t1,t0
-	lw	t2,0(t2)
-	sw	t2,32($fp)		#lastCharacterBuffer en (fp + 32)
+	lw	t1,36($fp)
+	addu	t2,t1,t0	
+	lb	t3,0(t2)
+	sw	t3,32($fp)		#lastCharacterBuffer en (fp + 32)
 
-#arrayLines = storeNewLine(lastCharacterBuffer,&lineCounter,arrayLines,&line); 
 	lw	a0,32($fp)		#lastCharacterBuffer
 	addu	a1,$fp,16		#&lineCounter
 	lw	a2,20($fp)		#arrayLines
 	addu	a3,$fp,24		#&line
 	la	t9,storeNewLine		#llamo a storeNewLine
 	jal	ra,t9	
-	lw	v0,20($fp)
+	sw	v0,20($fp)
 	
 	b	cond_while
 end: 
 
-#printLines(lineCounter, arrayLines);
 	lw	a0,16($fp)		#carga en a0 lineCounter que esta en (fp + 16)
 	lw	a1,20($fp)		#carga en a1 arrayLines que esta en (fp + 20)
 	la	t9,printLines		#llamo a printLines
 	jal	ra,t9
 
-#myfree(line);
 	lw	a0,24($fp)		#carga en a0 line que esta en (fp + 24)
 	la	t9,myfree		#llamo a myfree
 	jal	ra,t9
 
-#myfree(arrayLines);
 	lw	a0,20($fp)		#carga en a0 arrayLines que esta en (fp + 20)
 	la	t9,myfree		#llamo a myfree
 	jal	ra,t9
 
-#return (EXIT_SUCCESS);
 	li 	v0,1
 
 	lw	gp,48(sp)		#restauro gp (sp + 48)
@@ -121,5 +114,3 @@ end:
 
 	.rdata
 	.align 2
-buffer: .space 10
-	

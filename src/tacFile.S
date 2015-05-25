@@ -88,6 +88,8 @@ bloque_while:
 	la	t9,storeNewLine		#llamo a storeNewLine
 	jal	ra,t9	
 	lw	v0,20($fp)
+	
+	b	cond_while
 end: 
 
 #printLines(lineCounter, arrayLines);

@@ -56,7 +56,7 @@ Conjunto de \\instrucciones MIPS \\
 
 \section{Documentaci\'on}
 El objetivo del trabajo pr\'actico es desarrollar una versi\'on del comando tac de UNIX utilizando el conjunto de instrucciones MIPS. 
-Ya contab\'amos con el comando implementado en lenguaje C y deb\'iamos traducirlo a assembly MIPS. Para hacer esto optamos por dividir el c\'odigo en funciones pequeñas, con el objetivo de poder implementarlas y testearlas independientemente.
+Ya contab\'amos con el comando implementado en lenguaje C y deb\'iamos traducirlo a assembly MIPS. Para hacer esto optamos por dividir el c\'odigo en funciones peque\~nas, con el objetivo de poder implementarlas y testearlas independientemente.
 El algoritmo base del programa que se resume en la siguiente lista de pasos:
 \begin{enumerate}
 	\item Abrir un archivo pasado por par\'ametro o recibir un stream de datos desde stdin.
@@ -67,10 +67,13 @@ El algoritmo base del programa que se resume en la siguiente lista de pasos:
 
 El paso 1 fue implementado en C. Para el caso de los archivos lo resolvimos con la funci\'on fopen. Como resultado de este paso, nos qued\'o un puntero al archivo para operar con \'el. En caso de alg\'un error, lo lanzamos por stderr.
 
-Los pasos 2 y 3 fueron realizados ıntegramente en assembly MIPS. Para el manejo de la memoria din\'amica utilizamos las funciones ya implementadas mymalloc y myfree. Tuvimos que modificar el c\'odigo que utilizaba realloc para que tambi\'en pueda hacer uso de mymalloc.
+Los pasos 2 y 3 fueron realizados \'integramente en assembly MIPS. Para el manejo de la memoria din\'amica utilizamos las funciones ya implementadas mymalloc y myfree. Tuvimos que modificar el c\'odigo que utilizaba realloc para que tambi\'en pueda hacer uso de mymalloc.
+
 
 El paso 4 para cerrar el archivo nuevamente fue implementado en C con la funci\'on fclose. 
 
+
+El \'unico inconveniente durante el desarrollo de trabajo pr\'actico lo encontramos con la implementaci\'on de fgets. El problema era que haciamos la llamada al syscall encargado de la lectura de archivos (el 14) con los par\'ametros necesarios pero no nos devolv\'ia el bloque le\'ido. Tras mucho intentar, consultamos en el grupo de la materia esta cuesti\'on y al no obtener respuesta lo solucionamos llamando a fgets desde el c\'odigo assembly.
 
 \section{Comandos}
 Para obtener el ejecutable creamos un makefile. Por lo que para compilar el programa solo hace falta hacer:

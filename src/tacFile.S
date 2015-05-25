@@ -48,12 +48,12 @@ cond_while:
 	lw	a2,64($fp)
 	la	t9,readFile
 	jal	ra,t9
-	sw	v0,36($fp)
 
 	bne	v0,zero,bloque_while	#v0!=0 => entra a bloque_while
 	b	end
 
 bloque_while: 
+	sw	v0,36($fp)              # Guardo buffer leido
 
 	lw	a0,24($fp)		#puntero a line que esta en (fp + 24)
 	lw	a1,36($fp)		#direccion de comienzo de buffer
@@ -102,9 +102,9 @@ end:
 	la	t9,myfree		#llamo a myfree
 	jal	ra,t9
 
-	#lw	a0,36($fp)		#carga en a0 buffer que esta en (fp + 36)
-	#la	t9,myfree		#llamo a myfree
-	#jal	ra,t9
+  	lw	a0,36($fp)		#carga en a0 line que esta en (fp + 36)
+	la	t9,myfree		#llamo a myfree
+	jal	ra,t9
 
 	li 	v0,1
 

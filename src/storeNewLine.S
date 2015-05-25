@@ -21,10 +21,10 @@ storeNewLine:
 	sw	$fp,40(sp)		#guardo fp en SRA (sp + 40)
 	move	$fp,sp			#a partir de ahora uso fp	
 
-	sw	a0,20($fp)		#guardo a0 afuera del frame lastCharacterBuffer
-	sw	a1,24($fp)		#guardo a1 afuera del frame int* lineCounter
-	sw	a2,16($fp)		#guardo a2 afuera del frame char ** arrayLines
-	sw	a3,28($fp)		#guardo a3 afuera del frame char** line
+	sw	a0,20($fp)		#lastCharacterBuffer
+	sw	a1,24($fp)		#int* lineCounter
+	sw	a2,16($fp)		#char ** arrayLines
+	sw	a3,28($fp)		#char** line
 	
 	lw	a0,20($fp)		#cargo en a0 lastCharacterBuffer	
 	la	t9,isEndOfLine		#llamo a isEndOfLine
@@ -41,7 +41,7 @@ storeNewLine:
 	sw	v0,16($fp)		#resultado pisa arrayLines	
 
 	lw	t0,24($fp)		#cargo en t0 int* lineCounter	
-	lw	t0,0(t0)		#cargo en t10 lo que apunta t0
+	lw	t0,0(t0)		#cargo en t1 lo que apunta t0
 	lw	t1,16($fp)		#cargo en t1 direccion de arrayLines
 
         sll     t3, t0, 2  	 	
@@ -55,12 +55,7 @@ storeNewLine:
 	jal	ra,t9	
 
 	lw	t0,28($fp)		
-	sw	v0,0(t0)
-
-# **line = 0;
-	#lw	t0,28($fp)		
-	#move	t1,zero
-	#sw	t1,0(t0)		
+	sw	v0,0(t0)	
 
 	lw	t0,24($fp)		#cargo en t0 direccion de lineCounter	
 	lw	t1,0(t0)		#cargo en t1 lo que apunta t0

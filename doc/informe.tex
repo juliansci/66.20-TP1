@@ -32,8 +32,8 @@ Facultad de Ingenier\'ia \\}
 \end{LARGE}
 
 \begin{LARGE}
-\textbf{Trabajo pr\'actico 0:
-Infraestructura b\'asica \\
+\textbf{Trabajo pr\'actico 1:
+Conjunto de \\instrucciones MIPS \\
 %\vspace*{0.2in}
 }
 \end{LARGE}
@@ -55,38 +55,52 @@ Infraestructura b\'asica \\
 \end{titlepage}
 
 \section{Documentaci\'on}
-El objetivo del trabajo pr\'actico es desarrollar una versi\'on del comando tac de UNIX en lenguaje C. La funcionalidad b\'asica del mismo se basa en escribir por stdout el contenido de uno o m\'as archivos invirtiendo el orden de sus l\'ineas.
-
-En la etapa de dise\~no analizamos de qu\'e manera ibamos a realizar el programa. Identificamos que deb\'iamos trabajar con archivos y memoria din\'amica y que la biblioteca standard de C nos prove\'ia la funcionalidad necesaria para estos requerimientos. Luego, pensamos con un mayor nivel de detalle el algoritmo base del programa que se resume en la siguiente lista de pasos:
+El objetivo del trabajo pr\'actico es desarrollar una versi\'on del comando tac de UNIX utilizando el conjunto de instrucciones MIPS. 
+Ya contab\'amos con el comando implementado en lenguaje C y deb\'iamos traducirlo a assembly MIPS. Para hacer esto optamos por dividir el c\'odigo en funciones pequeñas, con el objetivo de poder implementarlas y testearlas independientemente.
+El algoritmo base del programa que se resume en la siguiente lista de pasos:
 \begin{enumerate}
-	\item Abrir un archivo pasado por par\'ametro.
-	\item Leer el archivo l\'inea por l\'inea hasta el final del archivo y guardarlo en un array. El tama\~no de las l\'ineas debe ser din\'amico.
+	\item Abrir un archivo pasado por par\'ametro o recibir un stream de datos desde stdin.
+	\item Leer el archivo o el stream l\'inea por l\'inea hasta el final y guardarlo en un array. El tama\~no de las l\'ineas debe ser din\'amico.
 	\item Recorrer el array en sentido inverso imprimiendo por stdout el contenido de cada l\'inea.
+	\item Cerrar el archivo si corresponde.
 \end{enumerate}
 
-El paso 1 consiste en abrir los archivos pasados por par\'ametro. Esto lo resolvimos f\'acilmente con la funci\'on fopen. Como resultado de este paso, nos qued\'o un puntero al archivo para operar con \'el. En caso de alg\'un error, lo lanzamos por stderr.
+El paso 1 fue implementado en C. Para el caso de los archivos lo resolvimos con la funci\'on fopen. Como resultado de este paso, nos qued\'o un puntero al archivo para operar con \'el. En caso de alg\'un error, lo lanzamos por stderr.
 
-El paso 2, sin dudas, es el m\'as complejo del trabajo pr\'actico. La complejidad reside en la lectura del archivo pidiendo memoria de manera din\'amica. 
-Identificamos que para leer l\'inea por l\'inea el archivo podiamos hacerlo mediante la lectura de caracter por caracter hasta un fin de l\'inea o la lectura de un bloque de caracteres hasta llegar al fin de l\'inea (fget vs fgets). Hemos optado por la segunda opci\'on por temas de rendimiento y practicidad.
-Luego de elegir leer el archivo mediante fgets, observamos que dicha funci\'on le\'ia una cantidad fija de caracteres por l\'inea y que los archivos con los que \'ibamos a trabajar esta cantidad iba a ser din\'amica. Claramente \'ibamos a tener que utilizar los m\'etodos de manejo de memoria de c: malloc, calloc, realloc y free.
+Los pasos 2 y 3 fueron realizados ıntegramente en assembly MIPS. Para el manejo de la memoria din\'amica utilizamos las funciones ya implementadas mymalloc y myfree. Tuvimos que modificar el c\'odigo que utilizaba realloc para que tambi\'en pueda hacer uso de mymalloc.
 
-En detalle de implementaci\'on, esto lo resolvimos de la siguiente manera:
-\begin{enumerate}
-	\item Por cada nueva l\'inea, inicializamos un array de caracteres que representaba la l\'inea leer. La asignaci\'on de memoria din\'amica a este array de caracteres lo hicimos mediante la funciona calloc que adem\'as de reservar la memoria estipulada la inicializa en 0.
-	\item Leemos bloques de caracteres mediante fgets en un buffer y lo copiamos en el array de caracteres que representa la l\'inea actual mencionada en el paso 1. En esta copia, tuvimos que redimensionar el array de caracteres mediante un realloc.
-	\item Si el \'ultimo caracter del buffer era un fin de l\'inea, se proced\'ia a guardar la l\'inea actual resultante en el array de l\'ineas y se inicializaba un nuevo array de caracteres como en el paso 1.
-\end{enumerate}
+El paso 4 para cerrar el archivo nuevamente fue implementado en C con la funci\'on fclose. 
 
-
-El paso 3. fue el m\'as simple, ya que con un solo recorrido del array formado anteriormente lo cumplimos sin problemas.
 
 \section{Comandos}
-Para compilar el programa es necesario escribir el siguiente comando en el directorio donde se encuentre main.c:
+Para obtener el ejecutable creamos un makefile. Por lo que para compilar el programa solo hace falta hacer:
 
 \lstset{language=bash, breaklines=true, basicstyle=\normalsize}
 \begin{lstlisting}
-$ gcc -o tp0 main.c
+$ make
 \end{lstlisting}
+
+El makefile es el siguiente:
+\begin{lstlisting}
+PROG  = tp1
+CFLAGS = -g -Wall
+DSRC = src/
+all: $(PROG)
+
+deleteOld:
+	rm $(PROG)
+
+tp1: $(DSRC)main.c $(DSRC)printHelp.S $(DSRC)printVersion.S $(DSRC)isEndOfLine.S $(DSRC)strLength.S $(DSRC)concatBuffer.S $(DSRC)tacFile.S $(DSRC)printLines.S $(DSRC)resizeArrayLines.S  $(DSRC)mergeStrings.S $(DSRC)mymalloc.S $(DSRC)storeNewLine.S $(DSRC)readFile.S
+	$(CC) $(CFLAGS) -o $@ $>
+
+clean:
+	rm -f $(PROG) *.so *.o *.a *.core
+	
+permissions:
+	chmod +x $(PROG)
+
+\end{lstlisting}
+
 
 \section{Corridas de prueba}
 Para corroborar el funcionamiento del programa cont\'abamos con una serie de archivos de prueba y con el diccionario de palabras ubicado en /usr/share/dict/words. 

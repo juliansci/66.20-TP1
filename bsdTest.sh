@@ -14,9 +14,11 @@ testFile() {
 echo Compilando...
 make
 
+testFile prueba
 testFile empty
 testFile basic
 testFile empty-lines
 testFile large-file
 testFile return
 testFile status
+testFile null

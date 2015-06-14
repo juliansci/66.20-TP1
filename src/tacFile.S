@@ -53,8 +53,6 @@ cond_while:
 	b	end
 
 bloque_while: 
-	sw	v0,36($fp)              # Guardo buffer leido
-
 	lw	a0,24($fp)		#puntero a line que esta en (fp + 24)
 	lw	a1,36($fp)		#direccion de comienzo de buffer
 	la	t9,concatBuffer		#llamo a concatBuffer. 

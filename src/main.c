@@ -1,13 +1,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 extern void printHelp();
 extern void printVersion();
-extern int tacFile(FILE* fp);
+extern int tacFile(int fileDescriptor);
 
 int main(int argc, char** argv) {
     
+	int fileDescriptor;
+
     if ((argc == 2) && ((strcmp(argv[1], "-h") == 0) || (strcmp(argv[1], "--help") == 0))) {
         printHelp();
         return (EXIT_SUCCESS);
@@ -19,9 +22,8 @@ int main(int argc, char** argv) {
     }
 
     int result;
-
     if (argc < 2) { //no tengo archivo de entrada, uso standard input
-        result = tacFile(stdin);
+    	result = tacFile(STDIN_FILENO);
         return (result);
     }
 
@@ -34,7 +36,14 @@ int main(int argc, char** argv) {
             fprintf(stderr, ": nombre de archivo o comando inválido.\n");
             return (EXIT_FAILURE);
         }
-        tacFile(fp);
+
+        fileDescriptor = fileno(fp);
+		if (!fileDescriptor) {
+			fprintf(stderr, ": no se pudo obtener el file descriptor \n");
+			return (EXIT_FAILURE);
+		}
+
+        tacFile(fileDescriptor);
         fclose(fp);
     }
     return (EXIT_SUCCESS);

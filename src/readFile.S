@@ -10,12 +10,11 @@
 #
 #constants
 #
-BYTES_TO_READ = 1
 NEW_LINE_ASCII = 10
 
 #sizes
 ABA_SIZE = 16
-LTA_SIZE = 8
+LTA_SIZE = 16
 SRA_SIZE = 16
 FRAME_SIZE = ABA_SIZE + LTA_SIZE + SRA_SIZE
 
@@ -23,6 +22,7 @@ FRAME_SIZE = ABA_SIZE + LTA_SIZE + SRA_SIZE
 LTA_OFFSET = ABA_SIZE
 TOTAL_BYTES_READ_OFFSET = LTA_OFFSET
 LAST_READ_CHAR_OFFSET = LTA_OFFSET + 4
+BYTE_READ_OFFSET = LTA_OFFSET + 8
 
 SRA_OFFSET = LTA_OFFSET + LTA_SIZE
 GP_OFFSET = SRA_OFFSET
@@ -72,41 +72,60 @@ readToBuffer:
 	sw		t0, TOTAL_BYTES_READ_OFFSET($fp)
 
 _forRead:
-
 	lw		t0, TOTAL_BYTES_READ_OFFSET($fp)
 	lw 		t1, BUFF_INCR_SIZE_OFFSET($fp)
 	bgeu 	t0, t1, _endRead	# si (i >= bufIncrSize) termino de leer
 
-	lw		t2, BUFFER_OFFSET($fp)
-	addu	t2, t2, t0
+	#alloco memoria para leer un byte
+	li 	a0, 1
+	la	t9, mymalloc		#llamo a malloc
+	jal	ra, t9
+	sw	v0, BYTE_READ_OFFSET($fp)		#obtengo puntero al byte
 
 	#read from file
 	li 		v0, SYS_read      				 # system call for read from file
 	lw 		a0, FILE_DESCRIPTOR_OFFSET($fp)  	# file descriptor
-	move	a1, t2							#buffer
-	li 		a2, BYTES_TO_READ					# buffer length
+	lw		a1, BYTE_READ_OFFSET($fp)			# byte buffer
+	li 		a2, 1								# buffer length
 	syscall 					        # read from file
+	# si devuelve 0, termino de leer
+	beq		v0, zero, _freeAndEndRead
 
-	beq		v0, zero, _endRead		# si devuelve 0, termino de leer
+	#recupero el byte leido
+	lw		t2, BYTE_READ_OFFSET($fp)	# t2 = direccion del byte leido
+	lb		t3, 0(t2)					# t3 = byte leido
 
+	#guardo el byte leido en el lugar correspondiente del buffer
+	lw		t0, TOTAL_BYTES_READ_OFFSET($fp) # t0 = i
+	lw		t4, BUFFER_OFFSET($fp)
+	addu	t4, t4, t0
+	sb		t3, 0(t4)					# buffer[i] <- byte leido
+
+	# i++
 	lw		t0, TOTAL_BYTES_READ_OFFSET($fp)
-	lw		t2, BUFFER_OFFSET($fp)
-	addu	t2, t2, t0
-	lb		t3, 0(t2)		# t3 = ultimo caracter leido
-	sb		t3, LAST_READ_CHAR_OFFSET($fp)
-
-	lw		t0, TOTAL_BYTES_READ_OFFSET($fp)
-	addi	t0, t0, 1		# i++
+	addi	t0, t0, 1
 	sw		t0, TOTAL_BYTES_READ_OFFSET($fp)
 
-	lb		t3, LAST_READ_CHAR_OFFSET($fp)
-	li 		t4, NEW_LINE_ASCII
-	beq		t3, t4, _endRead
+	#recupero el byte leido y lo comparo con newLine
+	lw		t2, BYTE_READ_OFFSET($fp)	# t2 = direccion del byte leido
+	lb		t3, 0(t2)					# t3 = byte leido
+	li 		t5, NEW_LINE_ASCII
+	beq		t3, t5, _freeAndEndRead
+
+	# libero el byte de lectura
+	lw	a0, BYTE_READ_OFFSET($fp)
+	la	t9, myfree
+	jal	ra, t9
 
 	j		_forRead
 
-_endRead:
+_freeAndEndRead:
+	# libero el byte de lectura
+	lw	a0, BYTE_READ_OFFSET($fp)
+	la	t9, myfree
+	jal	ra, t9
 
+_endRead:
 	lw		v0, TOTAL_BYTES_READ_OFFSET($fp)
 	lw 		gp, GP_OFFSET(sp)
 	lw 		$fp, FP_OFFSET(sp)

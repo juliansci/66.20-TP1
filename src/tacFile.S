@@ -73,7 +73,7 @@ cond_while:
 	b		end
 
 bloque_while: 
-
+	////// me quede acaaaaaa
 
 
 

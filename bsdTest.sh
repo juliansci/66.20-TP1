@@ -14,11 +14,12 @@ testFile() {
 echo Compilando...
 make
 
-testFile prueba
-testFile empty
 testFile basic
+testFile empty
 testFile empty-lines
 testFile large-file
+testFile null
+testFile random
 testFile return
 testFile status
-testFile null
+

@@ -13,7 +13,7 @@
 	.ent		mergeStrings
 mergeStrings:
 #creo frame
-	.frame		$fp, 56, ra   # 4(SRA) + 0(FPA) + 6(LTA) + 4(ABA) (leaf function)
+	.frame		$fp, 56, ra   # 4(SRA) + 0(FPA) + 6(LTA) + 4(ABA) (non-leaf function, llama a mymalloc)
 	.set		noreorder
 	.cpload		t9
 	.set		reorder

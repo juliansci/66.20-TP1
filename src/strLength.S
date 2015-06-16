@@ -33,13 +33,15 @@ _for:
         # Condicion de corte del for
         addu t1, a0, t0  # Apunto en t1 al siguiente byte del string recibido por param
         lb t1, 0(t1) # Cargo el character apuntado en t1
-        beq t1, zero, _end_for
+	li t4,10
+        beq t1, t4, _end_for
         addu t0, t0, 1
         j _for
 
 _end_for:
         
         # Preparo todo para retorno
+ addu t0, t0, 1
         move v0, t0
         lw gp, 8($fp)
         lw $fp, 12(sp)

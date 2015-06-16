@@ -21,16 +21,9 @@ storeNewLine:
 	sw	$fp,40(sp)		#guardo fp en SRA (sp + 40)
 	move	$fp,sp			#a partir de ahora uso fp	
 
-	sw	a0,20($fp)		#lastCharacterBuffer
-	sw	a1,24($fp)		#int* lineCounter
-	sw	a2,16($fp)		#char ** arrayLines
-	sw	a3,28($fp)		#char** line
-	
-	lw	a0,20($fp)		#cargo en a0 lastCharacterBuffer	
-	la	t9,isEndOfLine		#llamo a isEndOfLine
-	jal	ra,t9	
-	
-	beq	v0,zero,end		#si el resultado es = 0 => salto al final 
+	sw	a0,24($fp)		#int* lineCounter
+	sw	a1,16($fp)		#char ** arrayLines
+	sw	a2,28($fp)		#char** line
 
 	lw	a0,16($fp)		#cargo en a0 arrayLines	
 
@@ -62,8 +55,6 @@ storeNewLine:
 	addu 	t1,t1,1			#le sumo 1
 	sw	t1,0(t0)	  	#guardo en direccion que esta en t0 el contenido de t1	
 
-	
-end:
 	lw	v0,16($fp)		#return arrayLines
 	lw	gp,32(sp)		#restauro gp (sp + 32)
 	lw	ra,36(sp)		#restauro ra (sp + 36)
